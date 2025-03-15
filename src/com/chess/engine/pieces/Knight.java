@@ -17,7 +17,7 @@ public class Knight extends Piece {
 
     private final static int[] CANDIDATE_MOVE_COORDINATES = {-17, -15, -10, -6, 6, 10, 15, 17};
 
-    Knight(final int piecePosition, final Alliance pieceAlliance) {
+    public Knight(final int piecePosition, final Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance);
     }
 
@@ -43,7 +43,6 @@ public class Knight extends Piece {
                 } else {
                     final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                     final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
-
                     if(this.pieceAlliance != pieceAlliance) {
                         legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
                     }
@@ -60,6 +59,11 @@ public class Knight extends Piece {
                 (BoardUtils.SECOND_COLUMN[currentPosition] && (candidateOffset == -10 || candidateOffset == 6)) ||
                 (BoardUtils.SEVENTH_COLUMN[currentPosition] && (candidateOffset == -6 || candidateOffset == 10)) ||
                 (BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -15 || candidateOffset == -6 || candidateOffset == 10 || candidateOffset == 17));
+    }
+
+    @Override
+    public String toString() {
+        return PieceType.KNIGHT.toString();
     }
 
 }
