@@ -2,6 +2,9 @@ package com.chess.engine.board;
 
 import com.chess.engine.Alliance;
 import com.chess.engine.pieces.*;
+import com.chess.engine.player.BlackPlayer;
+import com.chess.engine.player.Player;
+import com.chess.engine.player.WhitePlayer;
 
 import java.util.*;
 
@@ -10,14 +13,22 @@ public class Board {
     private final List<Tile> board;
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
-    
-    private Board(Builder builder) {
+
+    private final WhitePlayer whitePlayer;
+    private final BlackPlayer blackPlayer;
+    private final Player currentPlayer;
+
+    private Board(final Builder builder) {
         this.board = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.board, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.board, Alliance.BLACK);
 
         final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
+
+        this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
 
     @Override
@@ -32,6 +43,26 @@ public class Board {
             }
         }
         return builder.toString();
+    }
+
+    public Player whitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player blackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public Player currentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public Collection<Piece> getBlackPieces() {
+        return this.blackPieces;
+    }
+
+    public Collection<Piece> getWhitePieces() {
+        return this.whitePieces;
     }
 
     private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
@@ -115,7 +146,7 @@ public class Board {
         builder.setPiece(new Rook(63, Alliance.WHITE));    // h1
 
         //white to move
-        builder.setNextMoveMaker(Alliance.WHITE);
+        builder.setMoveMaker(Alliance.WHITE);
         return builder.build();
     }
 
@@ -133,7 +164,7 @@ public class Board {
             return this;
         }
 
-        public Builder setNextMoveMaker(final Alliance nextMoveMaker) {
+        public Builder setMoveMaker(final Alliance nextMoveMaker) {
             this.nextMoveMaker = nextMoveMaker;
             return this;
         }
